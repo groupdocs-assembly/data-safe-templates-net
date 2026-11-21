@@ -1,9 +1,14 @@
-﻿# Templates that survive incomplete data
+﻿# Handle missing and null data in document templates (C#)
 
 [![build](https://github.com/groupdocs-assembly/data-safe-templates-net/actions/workflows/build.yml/badge.svg)](https://github.com/groupdocs-assembly/data-safe-templates-net/actions/workflows/build.yml)
 [![NuGet](https://img.shields.io/nuget/v/GroupDocs.Assembly?label=GroupDocs.Assembly)](https://www.nuget.org/packages/GroupDocs.Assembly/)
 [![.NET](https://img.shields.io/badge/.NET-8.0%20%7C%2010.0-512bd4)](https://dotnet.microsoft.com/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+**An empty array, a null object or a field that stopped arriving will stop a document assembling
+even when the template guards against it.** A JSON Schema, `AllowMissingMembers` and
+`InlineErrorMessages` each solve a different version of that, and this sample runs all four cases
+so you can see what each one changes.
 
 Real data has holes. A customer with no payment card yet, a loyalty record that is `null`, a field
 an upstream system stopped sending last Tuesday. A report that fills in perfectly on the developer's
@@ -132,6 +137,27 @@ Every call mirrors an example of the product's examples repository
   marks ([temporary licence](https://purchase.groupdocs.com/temporary-license)).
 * **Frameworks.** The sample targets .NET 8; the package also builds for .NET Framework 4.0 Client
   Profile, 4.6.2 and 4.8, .NET Standard 2.0, .NET 6 and .NET 10.
+
+## Common questions
+
+**How do I handle missing data in a Word template in C#?**
+A JSON Schema when the shape is known, `DocumentAssemblyOptions.AllowMissingMembers` when the data
+is genuinely sparse, `DocumentAssemblyOptions.InlineErrorMessages` when the template is not yours.
+
+**Why does an empty array break an `<<if>>` that guards it?**
+The expression is resolved whether or not the branch renders, and an empty array has no element
+type. A schema supplies it.
+
+**Why did `"00042"` become 42?**
+Type inference from the data. `"type": "string"` in the schema keeps it.
+
+**Is `AllowMissingMembers` safe to leave on?**
+Not always. If a field is renamed upstream it renders blanks in every document and nothing reports
+it. Prefer a schema when the shape is known.
+
+**How do I know a document assembled with errors?**
+`AssembleDocument` returns `false` with `InlineErrorMessages`, and the message is placed where the
+tag was.
 
 ## Related samples
 
